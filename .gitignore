@@ -1,0 +1,20 @@
+# Temp files created by most text editors.
+#*~
+# Nested build directory
+#/build
+#/bin
+#/lib
+#/objs
+# VS2017 and VSCode config files.
+#.vscode
+#.vs
+#.pdb
+#.ipbd
+# External projects that are tracked independently.
+#projects/*
+#!librarys/*.*
+#librarys/wxwidgets
+#!runtimes/*.*
+#!tools/*.*
+
+src/out
