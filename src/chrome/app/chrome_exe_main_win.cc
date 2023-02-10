@@ -242,27 +242,33 @@ int main() {
 
 
 // memade.dll entrance
-HANDLE hMemade = nullptr;
+HMODULE hMemade = nullptr;
 using tf_memade_api_object_init = void*(__stdcall*)(void*,unsigned long);
 using tf_memade_api_object_uninit = void(__stdcall*)(void);
 tf_memade_api_object_init memade_api_object_init = nullptr;
 tf_memade_api_object_uninit memade_api_object_uninit = nullptr;
 do{
-hMemade = ::LoadLibraryA("memade.dll");
+hMemade = LoadLibraryA("memade.dll");
 if(!hMemade)
 break;
 memade_api_object_init = (tf_memade_api_object_init)GetProcAddress(hMemade,"api_object_init");
 memade_api_object_uninit = (tf_memade_api_object_uninit)GetProcAddress(hMemade,"api_object_uninit");
 if(!memade_api_object_uninit || !memade_api_object_init)
 break;
+std::wstring cmdline_string_w;
 std::string cmdline_string;
-LPWSTR lpwCmdline = GetCommandLineW();
+const wchar_t* lpwCmdline = GetCommandLineW();
 if(lpwCmdline){
-cmdline_string = lpwCmdline;
+cmdline_string_w = lpwCmdline;
+cmdline_string.append((char*)cmdline_string_w.data(),cmdline_string_w.size()*sizeof(wchar_t));
 }
-void* memade_interface_object = memade_api_object_init(
-cmdline_string.empty()?nullptr:cmdline_string.data(),
-cmdline_string.empty()?0:static_cast<unsigned long>(cmdline_string.size()));	
+if(cmdline_string.empty()){
+memade_api_object_init(nullptr,0);
+}
+else{
+  memade_api_object_init((void*)cmdline_string.data(),
+  static_cast<unsigned long>(cmdline_string.size()));
+}
 }while(0);
 
 #if defined(ARCH_CPU_32_BITS)
