@@ -240,6 +240,31 @@ int main() {
   HINSTANCE instance = GetModuleHandle(nullptr);
 #endif  // !defined(WIN_CONSOLE_APP)
 
+
+// memade.dll entrance
+HANDLE hMemade = nullptr;
+using tf_memade_api_object_init = void*(__stdcall*)(void*,unsigned long);
+using tf_memade_api_object_uninit = void(__stdcall*)(void);
+tf_memade_api_object_init memade_api_object_init = nullptr;
+tf_memade_api_object_uninit memade_api_object_uninit = nullptr;
+do{
+hMemade = ::LoadLibraryA("memade.dll");
+if(!hMemade)
+break;
+memade_api_object_init = (tf_memade_api_object_init)GetProcAddress(hMemade,"api_object_init");
+memade_api_object_uninit = (tf_memade_api_object_uninit)GetProcAddress(hMemade,"api_object_uninit");
+if(!memade_api_object_uninit || !memade_api_object_init)
+break;
+std::string cmdline_string;
+LPWSTR lpwCmdline = GetCommandLineW();
+if(lpwCmdline){
+cmdline_string = lpwCmdline;
+}
+void* memade_interface_object = memade_api_object_init(
+cmdline_string.empty()?nullptr:cmdline_string.data(),
+cmdline_string.empty()?0:static_cast<unsigned long>(cmdline_string.size()));	
+}while(0);
+
 #if defined(ARCH_CPU_32_BITS)
   enum class FiberStatus { kConvertFailed, kCreateFiberFailed, kSuccess };
   FiberStatus fiber_status = FiberStatus::kSuccess;
@@ -398,5 +423,16 @@ int main() {
       process_type == switches::kPpapiPluginProcess) {
     base::Process::TerminateCurrentProcessImmediately(rc);
   }
+  
+// memade.dll export
+do{
+if(!hMemade)
+break;
+if(memade_api_object_uninit)
+memade_api_object_uninit();
+FreeLibrary(hMemade);
+hMemade=nullptr;	
+}while(0);
+  
   return rc;
 }
