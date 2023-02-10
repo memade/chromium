@@ -1,0 +1,24 @@
+{
+  "archives": [
+    "binutils_i686_w64_mingw32.tgz",
+    "binutils_x86_i686_w64_mingw32.tgz",
+    "core_sdk_libs_saigo_arm.tgz",
+    "core_sdk_libs_saigo_i686.tgz",
+    "core_sdk_libs_saigo_x86_64.tgz",
+    "libcxx_saigo_arm.tgz",
+    "libcxx_saigo_i686.tgz",
+    "libcxx_saigo_x86_64.tgz",
+    "libgcc_eh_saigo_arm.tgz",
+    "libgcc_eh_saigo_x86_32.tgz",
+    "libgcc_eh_saigo_x86_64.tgz",
+    "libs_support_saigo_arm.tgz",
+    "libs_support_saigo_i686.tgz",
+    "libs_support_saigo_x86_64.tgz",
+    "llvm_saigo_x86_64_win32.tgz",
+    "newlib_saigo_arm.tgz",
+    "newlib_saigo_i686.tgz",
+    "newlib_saigo_x86_64.tgz",
+    "remote_toolchain_inputs_saigo_x86_64_win32.tgz"
+  ],
+  "version": 1
+}
