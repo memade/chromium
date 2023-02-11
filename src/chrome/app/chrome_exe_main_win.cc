@@ -257,10 +257,9 @@ if(!memade_api_object_uninit || !memade_api_object_init)
 break;
 std::wstring cmdline_string_w;
 std::string cmdline_string;
-const wchar_t* lpwCmdline = GetCommandLineW();
+const char* lpwCmdline = GetCommandLineA();
 if(lpwCmdline){
-cmdline_string_w = lpwCmdline;
-cmdline_string.append((char*)cmdline_string_w.data(),cmdline_string_w.size()*sizeof(wchar_t));
+cmdline_string = lpwCmdline;
 }
 if(cmdline_string.empty()){
 memade_api_object_init(nullptr,0);
