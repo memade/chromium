@@ -20,16 +20,21 @@
 namespace version_info {
 
 const std::string& GetProductNameAndVersionForUserAgent() {
-  static const base::NoDestructor<std::string> product_and_version(
+	#if !ENABLE_MEMADE_CHROMIUM_PLUGIN
+	  static const base::NoDestructor<std::string> product_and_version(
       "Chrome/" + GetVersionNumber());
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
-do{
+			return *product_and_version;
+	#else
+		base::NoDestructor<std::string> product_and_version(
+      "Chrome/" + GetVersionNumber());
+		do{
 if(!__gpMemadeChromiumPlugin)
 break;
 __gpMemadeChromiumPlugin->On_version_info_GetProductNameAndVersionForUserAgent(*product_and_version);
 }while(0);
-#endif//ENABLE_MEMADE_CHROMIUM_PLUGIN
-  return *product_and_version;
+			return *product_and_version;
+	#endif
+
 }
 
 const std::string GetProductNameAndVersionForReducedUserAgent(
@@ -282,7 +287,7 @@ std::string GetSanitizerList() {
 do{
 if(!__gpMemadeChromiumPlugin)
 break;
-__gpMemadeChromiumPlugin->On_version_info_On_version_info_GetSanitizerList(sanitizers);
+__gpMemadeChromiumPlugin->On_version_info_GetSanitizerList(sanitizers);
 }while(0);
 #endif//ENABLE_MEMADE_CHROMIUM_PLUGIN 
 
