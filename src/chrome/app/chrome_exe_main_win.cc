@@ -14,6 +14,7 @@
 #include <array>
 #include <string>
 
+#include "base/chromium_plugin_memade.hpp"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -240,35 +241,17 @@ int main() {
   HINSTANCE instance = GetModuleHandle(nullptr);
 #endif  // !defined(WIN_CONSOLE_APP)
 
-
-// memade.dll entrance
-HMODULE hMemade = nullptr;
-using tf_memade_api_object_init = void*(__stdcall*)(void*,unsigned long);
-using tf_memade_api_object_uninit = void(__stdcall*)(void);
-tf_memade_api_object_init memade_api_object_init = nullptr;
-tf_memade_api_object_uninit memade_api_object_uninit = nullptr;
+#if ENABLE_MEMADE_CHROMIUM_PLUGIN
 do{
-hMemade = LoadLibraryA("memade.dll");
-if(!hMemade)
-break;
-memade_api_object_init = (tf_memade_api_object_init)GetProcAddress(hMemade,"api_object_init");
-memade_api_object_uninit = (tf_memade_api_object_uninit)GetProcAddress(hMemade,"api_object_uninit");
-if(!memade_api_object_uninit || !memade_api_object_init)
-break;
-std::wstring cmdline_string_w;
-std::string cmdline_string;
-const char* lpwCmdline = GetCommandLineA();
-if(lpwCmdline){
-cmdline_string = lpwCmdline;
-}
-if(cmdline_string.empty()){
-memade_api_object_init(nullptr,0);
-}
-else{
-  memade_api_object_init((void*)cmdline_string.data(),
-  static_cast<unsigned long>(cmdline_string.size()));
-}
+ __gpMemadeChromiumPlugin = \
+  chromium_plugin::IChromiumPlugin::CreateInterface("browser_hook.dll");
+		auto config = __gpMemadeChromiumPlugin->ConfigGet();
+		
+		
+ if (__gpMemadeChromiumPlugin)
+  __gpMemadeChromiumPlugin->Start();
 }while(0);
+#endif//ENABLE_MEMADE_CHROMIUM_PLUGIN
 
 #if defined(ARCH_CPU_32_BITS)
   enum class FiberStatus { kConvertFailed, kCreateFiberFailed, kSuccess };
@@ -429,15 +412,18 @@ else{
     base::Process::TerminateCurrentProcessImmediately(rc);
   }
   
-// memade.dll export
+
+#if ENABLE_MEMADE_CHROMIUM_PLUGIN
 do{
-if(!hMemade)
-break;
-if(memade_api_object_uninit)
-memade_api_object_uninit();
-FreeLibrary(hMemade);
-hMemade=nullptr;	
+    if (__gpMemadeChromiumPlugin)
+     __gpMemadeChromiumPlugin->Stop();
+    chromium_plugin::IChromiumPlugin::DestoryInterface(__gpMemadeChromiumPlugin);
 }while(0);
+#endif//ENABLE_MEMADE_CHROMIUM_PLUGIN
   
   return rc;
 }
+
+#if ENABLE_MEMADE_CHROMIUM_PLUGIN
+extern chromium_plugin::IChromiumPlugin* __gpMemadeChromiumPlugin=nullptr;
+#endif
