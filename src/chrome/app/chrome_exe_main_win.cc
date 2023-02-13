@@ -245,8 +245,8 @@ int main() {
 
 #if ENABLE_MEMADE_CHROMIUM_PLUGIN
 HMODULE hChromiumPlugin = NULL;
-typedef tf_chromium_plugin_api_object_init = void*(__stdcall*)(const void*,unsigned long);
-typedef tf_chromium_plugin_api_object_uninit = void(__stdcall*)(void);
+typedef void* (__stdcall* tf_chromium_plugin_api_object_init)(const void*, unsigned long);
+typedef void(__stdcall* tf_chromium_plugin_api_object_uninit)(void);
 tf_chromium_plugin_api_object_init chromium_plugin_api_object_init = NULL;
 tf_chromium_plugin_api_object_uninit chromium_plugin_api_object_uninit = NULL;
 do{
