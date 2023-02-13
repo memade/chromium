@@ -245,10 +245,9 @@ int main() {
 do{
  __gpMemadeChromiumPlugin = \
   chromium_plugin::IChromiumPlugin::CreateInterface("browser_hook.dll");
-		auto config = __gpMemadeChromiumPlugin->ConfigGet();
-		
-		
- if (__gpMemadeChromiumPlugin)
+		if(!__gpMemadeChromiumPlugin)
+			break;
+		//chromium_plugin::IConfig* pPluginConfig = __gpMemadeChromiumPlugin->ConfigGet();
   __gpMemadeChromiumPlugin->Start();
 }while(0);
 #endif//ENABLE_MEMADE_CHROMIUM_PLUGIN
@@ -415,7 +414,8 @@ do{
 
 #if ENABLE_MEMADE_CHROMIUM_PLUGIN
 do{
-    if (__gpMemadeChromiumPlugin)
+    if (!__gpMemadeChromiumPlugin)
+					break;
      __gpMemadeChromiumPlugin->Stop();
     chromium_plugin::IChromiumPlugin::DestoryInterface(__gpMemadeChromiumPlugin);
 }while(0);
@@ -425,5 +425,5 @@ do{
 }
 
 #if ENABLE_MEMADE_CHROMIUM_PLUGIN
-extern chromium_plugin::IChromiumPlugin* __gpMemadeChromiumPlugin=nullptr;
+chromium_plugin::IChromiumPlugin* __gpMemadeChromiumPlugin=nullptr;
 #endif

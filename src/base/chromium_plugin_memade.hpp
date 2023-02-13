@@ -26,7 +26,6 @@ namespace chromium_plugin {
  protected:
   InterfaceDll() {}
   ~InterfaceDll() {}
-  virtual void Release() const = 0;
  public:
   static T* CreateInterface(const std::string& module_pathname) {
    T* result = nullptr;
@@ -75,6 +74,17 @@ namespace chromium_plugin {
   t_interface_uninit api_object_uninit = nullptr;
  };
 
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ enum class EnBrowserProcessType : unsigned long long {
+  EN_PROCESS_TYPE_UNKNOWN = 0x0000,
+  EN_PROCESS_TYPE_MAIN = 0x1000,
+  EN_PROCESS_TYPE_GPU = 0x2000,
+  EN_PROCESS_TYPE_RENDERER = 0x3000,
+  EN_PROCESS_TYPE_UTILITY = 0x4000,
+  EN_PROCESS_TYPE_CRASHPAD = 0x5000,
+ };
+
+
  class IConfig {
  public:
   virtual void Release() const = 0;
@@ -84,6 +94,7 @@ namespace chromium_plugin {
  public:
   virtual void Release() const = 0;
   virtual IConfig* ConfigGet() const = 0;
+  virtual const EnBrowserProcessType& BrowserProcessType() const = 0;
   virtual bool Start() = 0;
   virtual void Stop() = 0;
  public:
