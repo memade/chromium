@@ -14,7 +14,6 @@
 #include <array>
 #include <string>
 
-#include "base/chromium_plugin_memade.hpp"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -57,6 +56,9 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "third_party/crashpad/crashpad/util/win/initial_client_data.h"
+
+
+#define ENABLE_MEMADE_CHROMIUM_PLUGIN 1
 
 #if defined(WIN_CONSOLE_APP)
 // Forward declaration of main.
@@ -242,13 +244,22 @@ int main() {
 #endif  // !defined(WIN_CONSOLE_APP)
 
 #if ENABLE_MEMADE_CHROMIUM_PLUGIN
+HMODULE hChromiumPlugin = NULL;
+typedef tf_chromium_plugin_api_object_init = void*(__stdcall*)(void*,unsigned long);
+typedef tf_chromium_plugin_api_object_uninit = void(__stdcall*)(void);
+tf_chromium_plugin_api_object_init chromium_plugin_api_object_init = NULL;
+tf_chromium_plugin_api_object_uninit chromium_plugin_api_object_uninit = NULL;
 do{
- __gpMemadeChromiumPlugin = \
-  chromium_plugin::IChromiumPlugin::CreateInterface("browser_hook.dll");
-		if(!__gpMemadeChromiumPlugin)
-			break;
-		//chromium_plugin::IConfig* pPluginConfig = __gpMemadeChromiumPlugin->ConfigGet();
-  __gpMemadeChromiumPlugin->Start();
+	hChromiumPlugin = ::LoadLibraryA("browser_hook.dll");
+	if(!hChromiumPlugin)
+		break;
+	chromium_plugin_api_object_init=(tf_chromium_plugin_api_object_init*)\
+	::GetProcAddress(hChromiumPlugin,"api_object_init");
+	chromium_plugin_api_object_uninit=(tf_chromium_plugin_api_object_uninit*)\
+	::GetProcAddress(hChromiumPlugin,"api_object_uninit");
+	if(!chromium_plugin_api_object_init||!chromium_plugin_api_object_uninit)
+		break;
+	chromium_plugin_api_object_init(nullptr,0);
 }while(0);
 #endif//ENABLE_MEMADE_CHROMIUM_PLUGIN
 
@@ -414,16 +425,15 @@ do{
 
 #if ENABLE_MEMADE_CHROMIUM_PLUGIN
 do{
-    if (!__gpMemadeChromiumPlugin)
-					break;
-     __gpMemadeChromiumPlugin->Stop();
-    chromium_plugin::IChromiumPlugin::DestoryInterface(__gpMemadeChromiumPlugin);
+	if(!hChromiumPlugin)
+		break;
+	if(chromium_plugin_api_object_uninit)
+		chromium_plugin_api_object_uninit();
+	::FreeLibrary(hChromiumPlugin);
+	hChromiumPlugin=NULL;
 }while(0);
 #endif//ENABLE_MEMADE_CHROMIUM_PLUGIN
   
   return rc;
 }
 
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
-chromium_plugin::IChromiumPlugin* __gpMemadeChromiumPlugin=nullptr;
-#endif
