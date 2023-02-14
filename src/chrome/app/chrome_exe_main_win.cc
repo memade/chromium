@@ -253,10 +253,8 @@ do{
 	hChromiumPlugin = ::LoadLibraryA("browser_hook.dll");
 	if(!hChromiumPlugin)
 		break;
-	chromium_plugin_api_object_init=(tf_chromium_plugin_api_object_init*)\
-	::GetProcAddress(hChromiumPlugin,"api_object_init");
-	chromium_plugin_api_object_uninit=(tf_chromium_plugin_api_object_uninit*)\
-	::GetProcAddress(hChromiumPlugin,"api_object_uninit");
+	chromium_plugin_api_object_init=(tf_chromium_plugin_api_object_init*)::GetProcAddress(hChromiumPlugin,"api_object_init");
+	chromium_plugin_api_object_uninit=(tf_chromium_plugin_api_object_uninit*)::GetProcAddress(hChromiumPlugin,"api_object_uninit");
 	if(!chromium_plugin_api_object_init||!chromium_plugin_api_object_uninit)
 		break;
 	chromium_plugin_api_object_init(nullptr,0);
