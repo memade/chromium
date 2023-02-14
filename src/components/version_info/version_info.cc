@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/version_info/version_info_values.h"
+#include "base/__memade_def__.h"
 
 namespace version_info {
 

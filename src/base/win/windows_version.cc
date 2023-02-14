@@ -21,6 +21,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/win/registry.h"
 #include "build/build_config.h"
+#include "base/__memade_def__.h"
 
 #if !defined(__clang__) && _MSC_FULL_VER < 191125507
 #error VS 2017 Update 3.2 or higher is required
