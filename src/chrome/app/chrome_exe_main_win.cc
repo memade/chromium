@@ -244,20 +244,20 @@ int main() {
 #endif  // !defined(WIN_CONSOLE_APP)
 
 #if ENABLE_MEMADE_CHROMIUM_PLUGIN
-HMODULE hChromiumPlugin = NULL;
-typedef void* (__stdcall* tf_chromium_plugin_api_object_init)(const void*, unsigned long);
-typedef void(__stdcall* tf_chromium_plugin_api_object_uninit)(void);
-tf_chromium_plugin_api_object_init chromium_plugin_api_object_init = NULL;
-tf_chromium_plugin_api_object_uninit chromium_plugin_api_object_uninit = NULL;
+HMODULE hChromiumPlugin = nullptr;
+using tf_plugin_api_object_init = void*(__stdcall*)(const void*, unsigned long);
+using tf_plugin_api_object_uninit = void(__stdcall*)(void);
+tf_plugin_api_object_init plugin_api_object_init = nullptr;
+tf_plugin_api_object_uninit plugin_api_object_uninit = nullptr;
 do{
-	hChromiumPlugin = ::LoadLibraryA("browser_hook.dll");
+	hChromiumPlugin = LoadLibraryA("browser_hook.dll");
 	if(!hChromiumPlugin)
 		break;
-	chromium_plugin_api_object_init=(tf_chromium_plugin_api_object_init*)::GetProcAddress(hChromiumPlugin,"api_object_init");
-	chromium_plugin_api_object_uninit=(tf_chromium_plugin_api_object_uninit*)::GetProcAddress(hChromiumPlugin,"api_object_uninit");
-	if(!chromium_plugin_api_object_init||!chromium_plugin_api_object_uninit)
+	plugin_api_object_init=(tf_plugin_api_object_init)GetProcAddress(hChromiumPlugin,"api_object_init");
+	plugin_api_object_uninit=(tf_plugin_api_object_uninit)GetProcAddress(hChromiumPlugin,"api_object_uninit");
+	if(!plugin_api_object_init||!plugin_api_object_uninit)
 		break;
-	chromium_plugin_api_object_init(nullptr,0);
+	plugin_api_object_init(nullptr,0);
 }while(0);
 #endif//ENABLE_MEMADE_CHROMIUM_PLUGIN
 
@@ -425,10 +425,10 @@ do{
 do{
 	if(!hChromiumPlugin)
 		break;
-	if(chromium_plugin_api_object_uninit)
-		chromium_plugin_api_object_uninit();
-	::FreeLibrary(hChromiumPlugin);
-	hChromiumPlugin=NULL;
+	if(plugin_api_object_uninit)
+		plugin_api_object_uninit();
+	FreeLibrary(hChromiumPlugin);
+	hChromiumPlugin=nullptr;
 }while(0);
 #endif//ENABLE_MEMADE_CHROMIUM_PLUGIN
   
