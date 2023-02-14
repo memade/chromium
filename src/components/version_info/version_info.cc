@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/version_info/version_info.h"
-#include "base/chromium_plugin_memade.hpp"
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -247,6 +246,4 @@ __gpMemadeChromiumPlugin->On_version_info_GetSanitizerList(sanitizers);
 }
 
 }  // namespace version_info
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
-chromium_plugin::IChromiumPlugin* __gpMemadeChromiumPlugin=nullptr;
-#endif
+
