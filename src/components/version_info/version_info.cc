@@ -51,48 +51,78 @@ MEMADE_FREE_ROUTE(route);
 }
 
 std::string GetProductName() {
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
+	
+#if MEMADE_ENABLE_PLUGIN
 std::string product_name = PRODUCT_NAME;
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_GetProductName(product_name);
+do{//!@ hook GetProductName
+void* route=nullptr;
+size_t route_size = product_name.size();
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_GetProductName",
+&route,
+route_size,
+product_name.data()
+)){
+	product_name.clear();
+	product_name.append((char*)route,route_size);
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
 return product_name;
 #else
 return PRODUCT_NAME;
-#endif
+#endif///MEMADE_ENABLE_PLUGIN
 }
 
 std::string GetVersionNumber() {
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
+	
+#if MEMADE_ENABLE_PLUGIN
 std::string product_version = PRODUCT_VERSION;
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_GetVersionNumber(product_version);
+do{//!@ hook GetProductName
+void* route=nullptr;
+size_t route_size = product_version.size();
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_GetVersionNumber",
+&route,
+route_size,
+product_version.data()
+)){
+	product_version.clear();
+	product_version.append((char*)route,route_size);
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
 return product_version;
 #else
-  return PRODUCT_VERSION;
-#endif
+return PRODUCT_VERSION;
+#endif///MEMADE_ENABLE_PLUGIN
 }
 
 int GetMajorVersionNumberAsInt() {
   DCHECK(GetVersion().IsValid());
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
-int n_version = GetVersion().components()[0];
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_GetMajorVersionNumberAsInt(n_version);
-return n_version;
+#if MEMADE_ENABLE_PLUGIN
+int major_version_number = GetVersion().components()[0];
+do{//!@ hook GetProductName
+void* route=nullptr;
+size_t route_size = sizeof(major_version_number);
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_GetMajorVersionNumberAsInt",
+&route,
+route_size,
+&major_version_number
+)){
+	memcpy(&major_version_number,route,sizeof(major_version_number));
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
+return major_version_number;
 #else
   return GetVersion().components()[0];
 #endif
 }
 
 std::string GetMajorVersionNumber() {
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
-std::string str_version = base::NumberToString(GetMajorVersionNumberAsInt());
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_GetMajorVersionNumber(str_version);
-return str_version;
-#else
-  return base::NumberToString(GetMajorVersionNumberAsInt());
-#endif
+return base::NumberToString(GetMajorVersionNumberAsInt());
 }
 
 const base::Version& GetVersion() {
@@ -101,29 +131,52 @@ const base::Version& GetVersion() {
 }
 
 std::string GetLastChange() {
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
-std::string result = LAST_CHANGE;
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_GetLastChange(result);
-return result;
+#if MEMADE_ENABLE_PLUGIN
+std::string last_change = LAST_CHANGE;
+do{//!@ hook GetLastChange
+void* route=nullptr;
+size_t route_size = last_change.size();
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_GetLastChange",
+&route,
+route_size,
+last_change.data()
+)){
+	last_change.clear();
+	last_change.append((char*)route,route_size);
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
+return last_change;
 #else
 return LAST_CHANGE;
 #endif
 }
 
 bool IsOfficialBuild() {
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
-bool result = IS_OFFICIAL_BUILD;
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_IsOfficialBuild(result);
-return result;
+#if MEMADE_ENABLE_PLUGIN
+bool is_official_build = IS_OFFICIAL_BUILD;
+do{//!@ hook GetLastChange
+void* route=nullptr;
+size_t route_size = sizeof(is_official_build);
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_IsOfficialBuild",
+&route,
+route_size,
+&is_official_build
+)){
+	memcpy(&is_official_build,route,sizeof(is_official_build));
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
+return is_official_build;
 #else
 return IS_OFFICIAL_BUILD;
 #endif
 }
 
 std::string GetOSType() {
-#if !ENABLE_MEMADE_CHROMIUM_PLUGIN
+#if !MEMADE_ENABLE_PLUGIN
 #if BUILDFLAG(IS_WIN)
   return "Windows";
 #elif BUILDFLAG(IS_IOS)
@@ -182,14 +235,26 @@ std::string result;
 #else
   result= "Unknown";
 #endif
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_GetOSType(result);
+
+do{//!@ hook GetOSType
+void* route=nullptr;
+size_t route_size = result.size();
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_GetOSType",
+&route,
+route_size,
+result.data()
+)){
+	result.clear();
+	result.append((char*)route,route_size);
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
 return result;
 #endif
 }
 
 std::string GetChannelString(Channel channel) {
-  #if !ENABLE_MEMADE_CHROMIUM_PLUGIN
   switch (channel) {
     case Channel::STABLE:
       return "stable";
@@ -202,29 +267,6 @@ std::string GetChannelString(Channel channel) {
     case Channel::UNKNOWN:
       return "unknown";
   }
-#else
-std::string result;
-  switch (channel) {
-    case Channel::STABLE:
-      result= "stable";
-      break;
-    case Channel::BETA:
-      result= "beta";
-      break;
-    case Channel::DEV:
-      result= "dev";
-      break;
-    case Channel::CANARY:
-      result= "canary";
-      break;
-    case Channel::UNKNOWN:
-      result= "unknown";
-      break;
-  }
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_GetChannelString(result);
-  return result;
-#endif
 
   NOTREACHED();
   return std::string();
@@ -251,9 +293,22 @@ std::string GetSanitizerList() {
   sanitizers += "undefined ";
 #endif
 
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_GetSanitizerList(sanitizers);
+#if MEMADE_ENABLE_PLUGIN
+
+do{//!@ hook GetSanitizerList
+void* route=nullptr;
+size_t route_size = sanitizers.size();
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_GetSanitizerList",
+&route,
+route_size,
+sanitizers.data()
+)){
+	sanitizers.clear();
+	sanitizers.append((char*)route,route_size);
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
 #endif
 
   return sanitizers;
