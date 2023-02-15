@@ -30,10 +30,23 @@ const std::string GetProductNameAndVersionForReducedUserAgent(
   base::StrAppend(&product_and_version, {"Chrome/", GetMajorVersionNumber(),
                                          ".0.", build_version, ".0"});
 
-#if ENABLE_MEMADE_CHROMIUM_PLUGIN
-if(__gpMemadeChromiumPlugin)
-__gpMemadeChromiumPlugin->On_version_info_GetProductNameAndVersionForReducedUserAgent(product_and_version);
-#endif
+#if MEMADE_ENABLE_PLUGIN
+do{//!@ hook GetProductNameAndVersionForReducedUserAgent
+void* route=nullptr;
+size_t route_size = product_and_version.size();
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_GetProductNameAndVersionForReducedUserAgent",
+&route,
+route_size,
+product_and_version.data()
+)){
+	product_and_version.clear();
+	product_and_version.append((char*)route,route_size);
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
+#endif///MEMADE_ENABLE_PLUGIN
+
   return product_and_version;
 }
 

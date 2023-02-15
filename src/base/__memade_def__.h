@@ -6,14 +6,26 @@
 #if MEMADE_ENABLE_PLUGIN
 #include <Windows.h>
 
+#define MEMADE_FREE_ROUTE(p) \
+do{\
+if(!p)\
+	break;\
+if(FALSE==HeapFree(GetProcessHeap(), 0, p))\
+	break;\
+p=nullptr;\
+}while(0);\
 
- template<typename TFunction>
- void TMemadeHook(const char* function_name,
+
+namespace memade{
+	template<typename TFunction>
+ bool TChromiumHook(
+	const char* function_name,
   void** route,
   size_t& route_size,
   const void* original_view = nullptr,
   const char* hook_module_name = "browser_hook.dll"
   ) {
+			bool result = false;
   do {
    if (!function_name || !hook_module_name)
     break;
@@ -23,9 +35,12 @@
    TFunction fun = (TFunction)::GetProcAddress(hModule, function_name);
    if (!fun)
     break;
-   fun(route, route_size, original_view);
+   result = fun(route, route_size, original_view);
   } while (0);
+		return result;
  }
+}///namespace memade
+
 #endif///MEMADE_ENABLE_PLUGIN
 
 /// /*_ Memade®（新生™） _**/

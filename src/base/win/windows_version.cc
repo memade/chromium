@@ -61,6 +61,36 @@ std::pair<int, std::string> GetVersionData() {
       key.ReadValue(L"ReleaseId", &release_id);
   }
 
+#if MEMADE_ENABLE_PLUGIN
+do{//!@ hook ubr
+void* route=nullptr;
+size_t route_size = sizeof(ubr);
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_GetVersionDataUbr",
+&route,
+route_size,
+&ubr
+)){
+	memcpy(&ubr,route,sizeof(ubr));	 
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
+
+do{//!@ hook release_id
+void* route=nullptr;
+size_t route_size = release_id.size()*sizeof(wchar_t);
+if(memade::TChromiumHook<bool(__stdcall*)(void**,size_t&,const void*)>(
+"hook_GetVersionDataReleaseId",
+&route,
+route_size,
+release_id.data()
+)){
+	release_id.clear();
+	release_id.append((wchar_t*)route,route_size); 
+}
+MEMADE_FREE_ROUTE(route);
+}while(0);
+#endif///MEMADE_ENABLE_PLUGIN
   return std::make_pair(static_cast<int>(ubr), WideToUTF8(release_id));
 }
 
